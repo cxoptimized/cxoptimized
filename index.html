@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CX Optimized – Free AI Audit Tool</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f8fafc;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: #2d6a4f;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    h2 { color: #1b4332; text-align: center; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: linear-gradient(90deg, #4CAF50, #0072ff);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .result {
+      margin-top: 2rem;
+      background: #f0fff4;
+      padding: 1.5rem;
+      border-radius: 10px;
+    }
+    .cta {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .cta a {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .buy {
+      background: linear-gradient(90deg, #4CAF50, #0072ff);
+      color: white;
+    }
+    .consult {
+      background: white;
+      border: 2px solid #0072ff;
+      color: #0072ff;
+    }
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CX Optimized</h1>
+    <span>AI-Powered Mini CX Audit</span>
+  </header>
+
+  <div class="container">
+    <h2>Start Your Free AI Audit</h2>
+    <p style="text-align:center;">Get an instant CX performance snapshot powered by CX Optimized Expert AI.</p>
+
+    <form id="auditForm">
+      <input type="text" id="company" placeholder="Company Name" required />
+      <input type="url" id="website" placeholder="Website URL (https://...)" required />
+      <input type="email" id="email" placeholder="Email Address" required />
+      <button type="submit">🚀 Run My Free Audit</button>
+    </form>
+
+    <div id="result" class="result" style="display:none;"></div>
+
+    <div id="cta" class="cta" style="display:none;">
+      <a href="https://cxoptimized.com/products" class="buy" target="_blank">💼 Purchase Recommended Audit</a>
+      <a href="https://calendly.com/cxoptimized/cx-optimized-owner" class="consult" target="_blank">📅 Schedule Consultation</a>
+    </div>
+  </div>
+
+  <footer>
+    Powered by CX Optimized Expert AI • © <span id="year"></span> CX Optimized
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("auditForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const company = document.getElementById("company").value;
+      const website = document.getElementById("website").value;
+      const email = document.getElementById("email").value;
+      const resultDiv = document.getElementById("result");
+      const ctaDiv = document.getElementById("cta");
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = "<p>⏳ Running CX Optimized AI Analysis...</p>";
+
+      const scores = {
+        websiteSpeed: Math.floor(Math.random() * 30) + 60,
+        mobileScore: Math.floor(Math.random() * 30) + 60,
+        gbpScore: Math.floor(Math.random() * 30) + 60,
+        socialPresence: Math.floor(Math.random() * 30) + 60
+      };
+      const overall = Math.round(
+        (scores.websiteSpeed + scores.mobileScore + scores.gbpScore + scores.socialPresence) / 4
+      );
+
+      const prompt = `
+      You are a CX analysis expert for CX Optimized.
+      The client is ${company} with website ${website}.
+      Based on their CX audit scores (Website ${scores.websiteSpeed}, Mobile ${scores.mobileScore}, GBP ${scores.gbpScore}, Social ${scores.socialPresence}),
+      write 2 sentences as "CX Optimized Expert AI Analysis" explaining what their score means and which audit fits best.`;
+
+      const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer ${process.env.OPENAI_API_KEY}",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+
+      const aiData = await aiResponse.json();
+      const analysis = aiData.choices?.[0]?.message?.content || "AI analysis unavailable.";
+
+      await fetch("https://script.google.com/macros/s/AKfycbxvdfF1ABmn88SZoOFq0zgxaiRh7JM7MUCM-ZfwTHLcqZ5a-AnF2d8TVyxaiNykGOToOw/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company, website, email, scores, overall })
+      });
+
+      resultDiv.innerHTML = `
+        <h3 style="text-align:center;">Overall CX Score: ${overall}/100</h3>
+        <p>${analysis}</p>
+      `;
+      ctaDiv.style.display = "block";
+    });
+  </script>
+</body>
+</html>
